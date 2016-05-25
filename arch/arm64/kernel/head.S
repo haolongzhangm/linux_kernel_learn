@@ -207,7 +207,7 @@ section_table:
 	.align 12
 #endif
 
-ENTRY(stext)
+ENTRY(stext) //ENTRY...ENDPROC用于指定汇编代码的入口，如果存在多个组合，由链接程序决定用哪个
 	bl	preserve_boot_args
 	bl	el2_setup			// Drop to EL1, w20=cpu_boot_mode
 	adrp	x24, __PHYS_OFFSET
@@ -231,15 +231,22 @@ ENDPROC(stext)
 preserve_boot_args:
 	mov	x21, x0				// x21=FDT
 
-	adr_l	x0, boot_args			// record the contents of
-	stp	x21, x1, [x0]			// x0 .. x3 at kernel entry
-	stp	x2, x3, [x0, #16]
+	adr_l	x0, boot_args			// record the contents of//adr_l把boot_args地址加载到x0寄存器，boot_args在./arch/arm64/kernel/setup.c中定义
+	stp	x21, x1, [x0]			// x0 .. x3 at kernel entry //把x21 dtb的地址保存在boot_args[0],x1 地址保存在boot_args[1]
+	stp	x2, x3, [x0, #16] // 把x2 x3保存在boot_args[2], boot_args[3];x1--x3必须是0，后面会校验的]]
 
 	dmb	sy				// needed before dc ivac with
 						// MMU off
 
-	add	x1, x0, #0x20			// 4 x 8 bytes
-	b	__inval_cache_range		// tail call
+	add	x1, x0, #0x20			// 4 x 8 bytes //把boot_args的末尾地址放置x1寄存器中，这样这个时候x0,x1分别就是boot_args的起始地址
+	b	__inval_cache_range		// tail call //处理cache line相关,清除cache line计算cache line等
+	//因为部分bootloader可能会把dcache打开，所有这里为了保证x1-x3所有寄存器的值已经完全写入boot_args对应的内存中去了
+	//使用dmb sys来保证数据的一致性
+	//ps: DMB、DSB 和 ISB
+	//DMB :数据内存屏障可作为内存屏障使用。 它可确保会先检测到程序中位于 DMB 指令前的所有显式内存访问指令，然后再检测到程序中位于 DMB 指令后的显式内存访问指令
+	//DSB :数据同步屏障是一种特殊类型的内存屏障。 只有当此指令执行完毕后，才会执行程序中位于此指令后的指令
+	//ISB :指令同步屏障可刷新处理器中的管道，因此可确保在 ISB 指令完成后，才从高速缓存或内存中提取位于该指令后的其他所有指令。这可确保提取时间晚于 ISB 指令的指令能够检测到 ISB 指令执行前就已经执行的上下文更改操作的执行效果，例如更改ASID 或已完成的 TLB 维护操作，跳转预测维护操作以及对 CP15 寄存器所做的所有更改
+
 ENDPROC(preserve_boot_args)
 
 /*
@@ -308,9 +315,16 @@ ENDPROC(preserve_boot_args)
  *   - first few MB of the kernel linear mapping to jump to once the MMU has
  *     been enabled
  */
+ //TLB(Translation Lookaside Buffer)传输后备缓冲器是一个内存管理单元用于改进虚拟地址到物理地址转换速度的缓存。
+ //PGD：全局描述符表
+ //PUD：折合到PGD中，Linux中不使用
+ //PMD：页表中间描述符表
+ //PTE：页表
+ //创建内核kernel和fdt临时映射内存
+ //ARMv8实际上提供了TCR_EL1 （Translation Control Register (EL1)可以对MMU的输入地址（也就是虚拟地址）进行配置)
 __create_page_tables:
-	adrp	x25, idmap_pg_dir
-	adrp	x26, swapper_pg_dir
+	adrp	x25, idmap_pg_dir //获取idmap的页表基地址(物理地址)
+	adrp	x26, swapper_pg_dir //获取kernel space 的页表基地址(物理地址)
 	mov	x27, lr
 
 	/*
@@ -324,7 +338,7 @@ __create_page_tables:
 	/*
 	 * Clear the idmap and swapper page tables.
 	 */
-	mov	x0, x25
+	mov	x0, x25 //idmap swapper页表内容设定为0
 	add	x6, x26, #SWAPPER_DIR_SIZE
 1:	stp	xzr, xzr, [x0], #16
 	stp	xzr, xzr, [x0], #16
@@ -448,13 +462,13 @@ ENDPROC(__mmap_switched)
  * booted in EL1 or EL2 respectively.
  */
 ENTRY(el2_setup)
-	mrs	x0, CurrentEL
+	mrs	x0, CurrentEL //Move System Register allows the PE to read an AArch64 System register into a general-purpose register.
 	cmp	x0, #CurrentEL_EL2
-	b.ne	1f
+	b.ne	1f //如果cpu不处在EL2则跳转到标签1执行，否在运行下面的配置,然后跳转到标签2运行
 	mrs	x0, sctlr_el2
-CPU_BE(	orr	x0, x0, #(1 << 25)	)	// Set the EE bit for EL2
-CPU_LE(	bic	x0, x0, #(1 << 25)	)	// Clear the EE bit for EL2
-	msr	sctlr_el2, x0
+CPU_BE(	orr	x0, x0, #(1 << 25)	)	// Set the EE bit for EL2 //orr 是逻辑或指令
+CPU_LE(	bic	x0, x0, #(1 << 25)	)	// Clear the EE bit for EL2 //BIC 是 逻辑”与非” 指令 // CPU_BE 大端模式才执行，CPU_LE小端模式才执行
+	msr	sctlr_el2, x0 //Move general-purpose register to System Register allows the PE to write an AArch64 System register from a general-purpose register
 	b	2f
 1:	mrs	x0, sctlr_el1
 CPU_BE(	orr	x0, x0, #(3 << 24)	)	// Set the EE and E0E bits for EL1
@@ -477,7 +491,7 @@ CPU_LE(	bic	x0, x0, #(3 << 24)	)	// Clear the EE and E0E bits for EL1
 #ifdef CONFIG_ARM_GIC_V3
 	/* GICv3 system register access */
 	mrs	x0, id_aa64pfr0_el1
-	ubfx	x0, x0, #24, #4
+	ubfx	x0, x0, #24, #4 //取出24 bit开始的4个bit的值并将该值赋给x0
 	cmp	x0, #1
 	b.ne	3f
 
@@ -549,9 +563,9 @@ ENTRY(set_cpu_boot_mode_flag)
 	cmp	w20, #BOOT_CPU_MODE_EL2
 	b.ne	1f
 	add	x1, x1, #4
-1:	str	w20, [x1]			// This CPU has booted in EL1
+1:	str	w20, [x1]			// This CPU has booted in EL1 //将w20中的值写入　x1寄存器中地址对应的内存地址中去
 	dmb	sy
-	dc	ivac, x1			// Invalidate potentially stale cache line
+	dc	ivac, x1			// Invalidate potentially stale cache line//data cache
 	ret
 ENDPROC(set_cpu_boot_mode_flag)
 
