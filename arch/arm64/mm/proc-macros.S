@@ -37,7 +37,7 @@
  * dcache_line_size - get the minimum D-cache line size from the CTR register.
  */
 	.macro	dcache_line_size, reg, tmp
-	mrs	\tmp, ctr_el0			// read CTR
+	mrs	\tmp, ctr_el0			// read CTR //Move System Register allows the PE to read an AArch64 System register into a general-purpose register.
 	ubfm	\tmp, \tmp, #16, #19		// cache line size encoding
 	mov	\reg, #4			// bytes per word
 	lsl	\reg, \reg, \tmp		// actual cache line size
