@@ -1,0 +1,2 @@
+#!/bin/bash
+./qemu_tool/qemu-system-aarch64 -machine virt -cpu cortex-a57 -machine type=virt -nographic -smp 2 -m 256 -kernel arch/arm64/boot/Image --append "console=ttyAMA0" -s -S
