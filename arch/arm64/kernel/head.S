@@ -83,6 +83,15 @@ efi_head:
 	b	stext				// branch to kernel start, magic
 	.long	0				// reserved
 #endif
+	//arm bit type
+	//".ascii"、".byte"、".short"、".int"、".long"、".word"、".quad"
+	//定义一个字符串，并为它分配空间
+	//定义一个字节，并为它分配空间，占单字节，0x34
+	//定义一个短整型，并为它分配空间，占双字节，0x1234
+	//定义一个整型，并为它分配空间，占四字节，0x12345678
+	//定义一个长整型，并为它分配空间，占四字节，0x12345678
+	//定义一个字，并为它分配空间，
+	//定义一个，并为它分配定义，占八字节
 	.quad	_kernel_offset_le		// Image load offset from start of RAM, little-endian
 	.quad	_kernel_size_le			// Effective size of kernel image, little-endian
 	.quad	_kernel_flags_le		// Informative flags, little-endian
@@ -208,8 +217,13 @@ section_table:
 #endif
 
 ENTRY(stext) //ENTRY...ENDPROC用于指定汇编代码的入口，如果存在多个组合，由链接程序决定用哪个
+//B或BL指令引起处理器转移到“子程序名”处开始执行。两者的不同之处在于BL指令在转移到子程序执行之前，
+//将其下一条指令的地址拷贝到R14（LR,链 接寄存器）。由于BL指令保存了下条指令的地址，
+//因此使用指令“MOV PC ,LR”即可实现子程序的返回。而B指令则无法实现子程序的返回，只能实现单纯的跳转。
 	bl	preserve_boot_args
 	bl	el2_setup			// Drop to EL1, w20=cpu_boot_mode
+	//adrp:Form PC-relative address to 4KB page adds an immediate value that is shifted left by 12 bits, to the PC value to
+	//form a PC-relative address, with the bottom 12 bits masked out, and writes the result to the destination register.
 	adrp	x24, __PHYS_OFFSET
 	bl	set_cpu_boot_mode_flag
 	bl	__create_page_tables		// x25=TTBR0, x26=TTBR1
@@ -219,6 +233,9 @@ ENTRY(stext) //ENTRY...ENDPROC用于指定汇编代码的入口，如果存在�
 	 * On return, the CPU will be ready for the MMU to be turned on and
 	 * the TCR will have been set.
 	 */
+	//LDR 的两种用法
+	//LDR pc, =MyHandleIRQ 表示将MyHandleIRQ符号放入pc寄存器中
+	//LDR PC，MyHandleIRQ 表示将读取存储器中MyHandleIRQ符号所表示的地址中的值，及需要多读一次存储器。
 	ldr	x27, =__mmap_switched		// address to jump to after
 						// MMU has been enabled
 	adr_l	lr, __enable_mmu		// return (PIC) address
