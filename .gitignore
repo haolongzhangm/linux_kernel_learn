@@ -1,0 +1,15 @@
+*.o
+*.cmd
+*.builtin
+*.order
+*.tmp
+.gitignore
+.config
+*.map
+*.a
+*.so
+*.symvers
+*.dbg
+.version
+vmlinux
+*.d
