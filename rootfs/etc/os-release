@@ -1,0 +1,5 @@
+NAME=Buildroot
+VERSION=2016.05-rc2-00023-gcaf4caa
+ID=buildroot
+VERSION_ID=2016.05-rc2
+PRETTY_NAME="Buildroot 2016.05-rc2"
