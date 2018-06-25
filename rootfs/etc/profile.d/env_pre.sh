@@ -1,4 +1,3 @@
 echo "customer env at: etc/profile.d"
-source /system/env_export.sh
-echo "start Android shell"
-sh
+echo "source env from /system/env/env.sh"
+source /system/env/env.sh
