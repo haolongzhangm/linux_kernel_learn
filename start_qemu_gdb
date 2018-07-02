@@ -1,2 +1,2 @@
 #!/bin/bash
-sudo qemu-system-aarch64 -machine virt -cpu cortex-a57 -machine type=virt -nographic -smp 4 -m 256 -kernel arch/arm64/boot/Image --append "console=ttyAMA0" -hda image/system.img -net  nic  -net  tap,ifname=tap4 -s -S
+qemu-system-aarch64 -machine virt -cpu cortex-a57 -machine type=virt -nographic -smp 4 -m 256 -kernel arch/arm64/boot/Image --append "console=ttyAMA0" -hda image/system.img -netdev user,id=n1 -device virtio-net-pci,netdev=n1 -s -S
