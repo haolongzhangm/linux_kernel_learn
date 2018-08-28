@@ -2,4 +2,5 @@
 export CROSS_COMPILE=aarch64-linux-gnu-
 export ARCH=arm64
 echo "use make defconfig to update config to .config"
-echo "sudo mount -t ext4 -o loop image/system.img /tmp/system to sync system image"
+echo "sudo make_ext4fs -l 1024M  -s -a system image/tmp.img image/system/"
+echo "simg2img image/tmp.img image/system.img"
