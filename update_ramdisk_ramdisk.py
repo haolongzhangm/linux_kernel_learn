@@ -1,6 +1,11 @@
 import sys
 import os
 
+if 'EN' != os.environ["LANG"]:
+    print('ERR LANG ENV!')
+    print('please run command like:\n   LANG=EN python %s rootfs' % sys.argv[0])
+    exit()
+
 if len(sys.argv) != 2:
     print("need a param, which means ramdisk root dir!")
     exit()
