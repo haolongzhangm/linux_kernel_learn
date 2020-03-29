@@ -1,0 +1,2 @@
+#!/bin/bash
+qemu-system-aarch64 -machine virt -cpu cortex-a57 -machine type=virt -nographic -smp 4 -m 512 -kernel arch/arm64/boot/Image --append "root=/dev/vda rootfstype=ext4 rw exec init=init console=ttyAMA0" -hda rootfs/ubuntu_16.04_arm64/system.img -s -S
