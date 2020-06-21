@@ -66,7 +66,7 @@ def main():
             gui_args = gui_args + "-device bochs-display"
         else:
             gui_args = gui_args + "-device VGA,vgamem_mb=128"
-        gui_args = gui_args + " -device usb-ehci -device usb-kbd -device usb-mouse -usb -display gtk,show-cursor=on"
+        gui_args = gui_args + " -device usb-ehci -device usb-kbd -device usb-mouse"
     else:
         gui_args = gui_args + "-nographic"
         if args.bochs:
