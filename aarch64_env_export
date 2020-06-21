@@ -2,5 +2,4 @@
 export CROSS_COMPILE=aarch64-linux-gnu-
 export ARCH=arm64
 echo "use make defconfig to update config to .config"
-echo "read: rootfs/ubuntu_16.04_arm64/build.md to get base sysmem img"
-echo "about VGA: -device bochs-display or -device VGA,vgamem_mb=32"
+echo "read: rootfs/ubuntu_20.04_arm64/build.md to get base sysmem img"

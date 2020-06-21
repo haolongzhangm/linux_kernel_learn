@@ -1,2 +1,0 @@
-#!/bin/bash
-qemu-system-aarch64 -machine virt -cpu cortex-a57 -machine type=virt -nographic -smp 4 -m 512 -kernel arch/arm64/boot/Image --append "root=/dev/vda rootfstype=ext4 rw exec init=init console=ttyAMA0" -hda rootfs/ubuntu_20.04_arm64/system.img -net nic,model=virtio -net user,hostfwd=tcp::2222-:22,hostfwd=tcp::5555-:5555 -s -S

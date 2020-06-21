@@ -7,11 +7,12 @@ mkdir -p /etc/network/interfaces.d
 echo "auto eth0" > /etc/network/interfaces.d/eth0
 echo "iface eth0 inet dhcp" >> /etc/network/interfaces.d/eth0
 
-#add qemu network devices enp0s1
+# add qemu network devices enp0s1
 echo "auto enp0s1" > /etc/network/interfaces.d/enp0s1
 echo "iface enp0s1 inet dhcp" >> /etc/network/interfaces.d/enp0s1
 
-#may change DNS for network work
+# may change DNS for network work
+# get nameserver ip from your host file /etc/resolv.conf
 echo "nameserver 127.0.0.53" >> /etc/resolv.conf
 
 echo "install more base package"
@@ -23,6 +24,8 @@ apt-get install resolvconf
 dpkg-reconfigure resolvconf
 apt-get install tzdata
 dpkg-reconfigure tzdata
+# for ubuntu GUI
+apt-get install ubuntu-desktop
 
 echo "config user..."
 adduser zhl
