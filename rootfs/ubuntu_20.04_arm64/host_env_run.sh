@@ -1,5 +1,9 @@
 echo "host env prepare ..."
-sudo apt-get install qemu-user-static binfmt-support debootstrap android-sdk-libsparse-utils android-sdk-ext4-utils
+sudo apt-get install qemu-user-static binfmt-support debootstrap
+
+# sudo apt-get install android-tools-fsutils
+sudo apt-get install android-sdk-libsparse-utils android-sdk-ext4-utils
+
 sudo rm -rf build
 mkdir build
 
@@ -12,6 +16,7 @@ fi
 sudo tar -xvf ubuntu-base-20.04-base-arm64.tar.gz -C build
 sudo cp -a /usr/bin/qemu-aarch64-static build/usr/bin/
 sudo cp ./init build/init
+sudo cp /etc/resolv.conf build
 sudo cp chroot_env_install.sh build/
 
 echo "run chroot env install"
