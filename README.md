@@ -1,4 +1,4 @@
 # linux_kernel_learn
-# use to lean 
+# use to easy lean  linux kernel with qemu
 
-checkout linux-v5.5_learn
+now please checkout linux-v5.5_learn
