@@ -2,8 +2,8 @@ echo "host env prepare ..."
 sudo apt-get install qemu-user-static binfmt-support debootstrap android-tools-fsutils
 sudo rm -rf build
 mkdir build
-wget http://cdimage.ubuntu.com/ubuntu-base/releases/16.04.2/release/ubuntu-base-16.04.5-base-arm64.tar.gz
-sudo tar -xvf ubuntu-base-16.04.5-base-arm64.tar.gz -C build
+wget http://cdimage.ubuntu.com/ubuntu-base/releases/16.04.2/release/ubuntu-base-16.04.6-base-arm64.tar.gz
+sudo tar -xvf ubuntu-base-16.04.6-base-arm64.tar.gz -C build
 sudo cp -a /usr/bin/qemu-aarch64-static build/usr/bin/
 sudo cp ./init build/init
 sudo cp chroot_env_install.sh build/

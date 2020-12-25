@@ -58,7 +58,7 @@ def main():
         print("ERR: invalid system image: %s" % args.system_image)
         exit(-1)
 
-    cmd = "qemu-system-aarch64 -machine virt -cpu cortex-a57 -machine type=virt -smp %d -m %d -kernel arch/arm64/boot/Image --append \"root=/dev/vda rootfstype=ext4 rw exec init=init console=ttyAMA0\" -hda %s -net nic,model=virtio -net user,hostfwd=tcp::2222-:22,hostfwd=tcp::5555-:5555" % (args.cpu_number, args.memory, args.system_image)
+    cmd = "qemu-system-aarch64 -machine virt -cpu cortex-a72 -machine type=virt -smp %d -m %d -kernel arch/arm64/boot/Image --append \"root=/dev/vda rootfstype=ext4 rw exec init=init console=ttyAMA0\" -hda %s -net nic,model=virtio -net user,hostfwd=tcp::2222-:22,hostfwd=tcp::5555-:5555" % (args.cpu_number, args.memory, args.system_image)
 
     gui_args = " "
     if args.display:
